@@ -5,7 +5,7 @@
 			<pages>
 				<Page id="page" title="{i18n>title}">
 					<content>
-						<Image src="images/MoviesHeader.png" tooltip="Movie Illustration" width="100%"></Image>
+						<Image src="images/MoviesHeader.png" tooltip="Movie Illustration" width="100%" press="sap.m.MessageToast.show('Do you feel like going to the movie?')"></Image>
 						<f:SimpleForm id="form" editable="true" layout="ColumnLayout" title="Find Movies" columnsM="2" columnsL="3" columnsXL="3">
 							<f:content>
 								<Label text="City" labelFor="city"/>
@@ -13,6 +13,7 @@
 								<Label text="Genre" labelFor="genre"/>
 								<Select id="genre" width="100%">
 									<!--item aggregation of the select control for the dropdown options-->
+									<!--first item is automatically selected-->
 									<core:ListItem icon="sap-icon://video" key="" text="All"/>
 									<core:ListItem icon="sap-icon://physical-activity" key="Action" text="Action"/>
 									<core:ListItem icon="sap-icon://electrocardiogram" key="Horror" text="Horror"/>
