@@ -1,33 +1,59 @@
 sap.ui.define([
 	"sap/ui/core/mvc/Controller",
-	"sap/base/Log"
-], function (Controller, Log) {
+	"sap/base/Log",
+	"../model/formatter",
+	"sap/ui/model/resource/ResourceModel",
+	"sap/ui/model/Filter",
+	"sap/ui/model/FilterOperator"
+
+], function (Controller, Log, formatter, ResourceModel, Filter, FilterOperator) {
 	"use strict";
 
 	return Controller.extend("opensap.movies.controller.App", {
+		formatter: formatter,
 		onInit: function () {
 			Log.info("Controller has been initialized!");
 		},
-		
+
 		onBeforeRendering: function () {
 			Log.info("The view will be shortly rendered!");
 		},
-		
+
 		onAfterRendering: function () {
 			Log.info("The view has been rendered");
 		},
-		
+
 		onPress: function (sValue) {
-		//load message toast asynchronously because don't know if the user will push the btn
-		//improve initial loading time
-		sap.ui.require(["sap/m/MessageToast"], function (oMessage) {
-		oMessage.show("Searching..." + " " + sValue);
-		});
+			sap.ui.require(["sap/m/MessageToast"], function (oMessage) {
+				var oResourceBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
+				oMessage.show(oResourceBundle.getText("search") + sValue);
+			}.bind(this));
+
+			var sCity = this.byId('city').getValue(),
+				sGenre = this.byId('genre').getSelectedItem().getKey(),
+				oCalendar = this.byId("calendar"),
+				oRowBinding = oCalendar.getBinding("rows"),
+				oFilterGenre,
+				oFilterCity;
+
+			// Create filters for genre and city according to user inputs
+			oFilterGenre = sGenre ? new Filter("genre", FilterOperator.EQ, sGenre) : null;
+			oFilterCity = sCity ? new Filter("info", FilterOperator.Contains, sCity) : null;
+
+			// Apply genre filter to calendar rows
+			oRowBinding.filter(oFilterGenre);
+
+			// Apply city filter to row appointments
+			var aRows = oCalendar.getAggregation("rows");
+			aRows.forEach(function (oItem) {
+				var oAppointmentsBinding = oItem.getBinding("appointments");
+				oAppointmentsBinding.filter(oFilterCity);
+			});
 		},
-		
-		onExit: function (){
+
+		onExit: function () {
 			Log.info("Controller has been destroyed");
 		}
-		
+
 	});
 });
